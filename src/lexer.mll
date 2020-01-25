@@ -34,17 +34,14 @@ rule read =
   | int      { INT (int_of_string (Lexing.lexeme lexbuf)) }
   | float    { FLOAT (float_of_string (Lexing.lexeme lexbuf)) }
   | "SET" | "set"  { SET }
-  | "KEY" | "key"  { KEY }
   | "POST" | "post"  { POST }
   | "TO" | "to"  { TO }
-  | "FOR" | "for"  { FOR }
   | "WHERE" | "where" { WHERE }
   | "IS" | "is" { IS }
   | "HOST" | "host" { HOST }
   | "PORT" | "port" { PORT }
   | "GET" | "get" { GET }
   | "DELETE" | "delete" { DELETE }
-  | "DATA" | "data" { DATA }
   | "LAST" | "last" { LAST }
   | "FROM" | "from" { FROM }
   | "SINCE" | "since" { SINCE }

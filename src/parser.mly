@@ -21,10 +21,7 @@
 %token COUNT
 %token MEAN
 %token SD
-%token FOR
 %token LAST
-%token DATA
-%token KEY
 %token SECONDS
 %token MINUTES
 %token HOURS
@@ -52,9 +49,6 @@ host:
 port:
   PORT; n = INT { n };
 
-key:
-  KEY; s = STRING { s };  
-
 func:
   MIN { "min" } | MAX; { "max"} | SUM; {"sum"} | COUNT; {"count"} | MEAN; {"mean"} | SD; {"sd"};
 
@@ -75,9 +69,6 @@ last:
 
 tag:
   WHERE; s1 = STRING; IS; s2 = STRING { (s1,s2) } ;
-
-max_age:
-  FOR; n = INT; SECONDS { n } ;
 
 since:
   | SINCE; n = INT; SECONDS { Nibbleql.get_seconds(n) }
