@@ -1,5 +1,3 @@
-open Lwt.Infix;
-open Lwt_io;
 open Lexer;
 open Lexing;
 
@@ -13,12 +11,12 @@ let parse_with_error = (lexbuf) => {
   try (Parser.lang(Lexer.read, lexbuf)) {
   | SyntaxError(msg) => {
       let info = error_info(lexbuf);
-      let _ = fprintf(stderr, "%s %s", info, msg);
+      Printf.printf("%s %s", info, msg);
       None;
     };
   | Parser.Error => {
       let info = error_info(lexbuf);
-      let _ = fprintf(stderr, "%s syntax error", info);
+      Printf.printf("%s syntax error", info);
       None;
     };
   };
@@ -33,26 +31,48 @@ let parse = (lexbuf) => {
 
 let parse_string = (s) => {
   let lexbuf = Lexing.from_string(s); 
-  parse(lexbuf) |> Lwt.return;
+  parse(lexbuf);
 };
 
-let rec repl = () => {
-  printf("> ") >>= () =>
-    read_line(stdin) >>=
-      line => switch(line) {
-      | "quit" | "quit;" => exit(0);
-      | "" => repl();
-      | _ => parse_string(line) >>= 
-              res => write_line(stdout, res) >>= 
-                () => repl();
-      };
-};
-
-let rec run_repl = () => {
-  try (Lwt_main.run(repl())) {
-  | _ => let _ = fprintf(stderr, "Unkown error\n");
+let rec user_input = (prompt, cb) =>
+  switch (LNoise.linenoise(prompt)) {
+  | None => ()
+  | Some(v) =>
+    cb(v);
+    user_input(prompt, cb);
   };
-  run_repl();
-};
 
-printf("Nibbleql v0.1\n") >>= () => run_repl();
+let () = {
+  /*LNoise.set_multiline(true);*/
+  LNoise.set_hints_callback(
+    (line) =>
+      if (line != "set host ") {
+        None;
+      } else {
+        Some(("<name> port <number>", LNoise.Yellow, true));
+      }
+  );
+  LNoise.history_load(~filename=".history") |> ignore;
+  LNoise.history_set(~max_length=100) |> ignore;
+  LNoise.set_completion_callback(
+    (line_so_far, ln_completions) =>
+      if (line_so_far != "" && line_so_far.[0] == 'q') {
+        ["quit"] |> List.iter(LNoise.add_completion(ln_completions));
+      }
+  );
+  [
+    "Welcome to nibbleql the query language for nibbledb\n"
+  ]
+  |> List.iter(print_endline);
+  (
+    (from_user) => {
+      if (from_user == "quit") {
+        exit(0);
+      };
+      LNoise.history_add(from_user) |> ignore;
+      LNoise.history_save(~filename=".history") |> ignore;
+      parse_string(from_user) |> print_endline;
+    }
+  )
+  |> user_input("nibble> ");
+};

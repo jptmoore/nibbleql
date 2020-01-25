@@ -5,4 +5,4 @@
 
 (executable
  (name main)
- (libraries lwt.unix))
+ (libraries lwt.unix linenoise))
