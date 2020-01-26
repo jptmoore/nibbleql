@@ -1,7 +1,6 @@
 open Lexer;
 open Lexing;
 
-
 let error_info = (lexbuf) => {
   let pos = lexbuf.lex_curr_p;
   Printf.sprintf("%s:%d:%d", pos.pos_fname, pos.pos_lnum, pos.pos_cnum - pos.pos_bol + 1);
@@ -42,14 +41,14 @@ let rec user_input = (prompt, cb) =>
     user_input(prompt, cb);
   };
 
-let () = {
+let repl = () => {
   /*LNoise.set_multiline(true);*/
   LNoise.set_hints_callback(
     (line) =>
       if (line != "set host ") {
         None;
       } else {
-        Some(("hint: \"http://foo.com:80\"", LNoise.Blue, true));
+        Some(("hint: \"http://foo.com:8080\"", LNoise.Blue, true));
       }
   );
   LNoise.history_load(~filename=".history") |> ignore;
@@ -76,3 +75,5 @@ let () = {
   )
   |> user_input("nibble> ");
 };
+
+repl();

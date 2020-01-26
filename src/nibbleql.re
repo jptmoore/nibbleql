@@ -26,7 +26,6 @@ type num_t = float;
 type last_t = int;
 type method_t = string;
 type uri_t = string;
-type key_t = string;
 
 type value = [
   | `Set(uri_t)
@@ -42,7 +41,7 @@ let handle_uri = (uri) => {
   uri;
 }
 
-let process_post_tag = (num, tag) => {
+let process_payload = (num, tag) => {
   switch(tag) {
   | Some((s1,s2)) => sprintf("{\"%s\": \"%s\", \"value\": \"%f\"}", s1, s2, num)
   | None => sprintf("{\"value\": \"%f\"}", num)
@@ -50,8 +49,10 @@ let process_post_tag = (num, tag) => {
 };
 
 let handle_post = (num, to_, tag) => {
-  sprintf("%s/ts/%s", host_uri^, to_) ++ 
-  " --payload " ++ process_post_tag(num, tag)
+  
+  let uri = host_uri^ ++ "/ts/" ++ to_;
+  let payload = process_payload(num, tag);
+  sprintf("Post %s to %s", payload, uri)
 };
 
 let process_get_tag = (tag) => {
