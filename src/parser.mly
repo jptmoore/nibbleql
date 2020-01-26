@@ -7,7 +7,6 @@
 %token WHERE
 %token IS
 %token HOST
-%token PORT
 %token GET
 %token DELETE
 %token FROM
@@ -35,7 +34,7 @@ lang:
   | EOF       { None   } ;
 
 statement:
-  | SET; host = host;  port = port? { `Set (host, port) }
+  | SET; host = host; { `Set (host) }
   | POST; num = FLOAT; to_ = to_; tag = tag?;  { `Post (num, to_, tag) }
   | GET; func = func?; from = from; tag = tag?; since = since; { `Get_since (func,from,tag,since) }
   | GET; func = func?; from = from; tag = tag?; range = range; { `Get_range (func,from,tag,range) }
@@ -45,9 +44,6 @@ statement:
 
 host:
   HOST; s = STRING { s };
-
-port:
-  PORT; n = INT { n };
 
 func:
   MIN { "min" } | MAX; { "max"} | SUM; {"sum"} | COUNT; {"count"} | MEAN; {"mean"} | SD; {"sd"};

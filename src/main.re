@@ -49,7 +49,7 @@ let () = {
       if (line != "set host ") {
         None;
       } else {
-        Some(("<name> port <number>", LNoise.Yellow, true));
+        Some(("hint: \"http://foo.com:80\"", LNoise.Blue, true));
       }
   );
   LNoise.history_load(~filename=".history") |> ignore;

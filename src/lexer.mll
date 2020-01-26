@@ -39,7 +39,6 @@ rule read =
   | "WHERE" | "where" { WHERE }
   | "IS" | "is" { IS }
   | "HOST" | "host" { HOST }
-  | "PORT" | "port" { PORT }
   | "GET" | "get" { GET }
   | "DELETE" | "delete" { DELETE }
   | "LAST" | "last" { LAST }

@@ -1,5 +1,7 @@
 open Printf;
 
+let host_uri = ref("http://localhost:8000");
+
 let mil = 1000 * 1000;
 
 let get_time = () => {
@@ -23,12 +25,11 @@ type to_t = string;
 type num_t = float;
 type last_t = int;
 type method_t = string;
-type host_t = string;
-type port_t = option(int);
+type uri_t = string;
 type key_t = string;
 
 type value = [
-  | `Set(host_t, port_t)
+  | `Set(uri_t)
   | `Post(num_t, to_t, tag_t)
   | `Get_since(func_t,from_t,tag_t,since_t)
   | `Get_range(func_t,from_t,tag_t,range_t)
@@ -36,19 +37,10 @@ type value = [
   | `Delete_range(from_t,tag_t,range_t)
 ];
 
-let process_host = (host) => {
-  switch(host) {
-  | Some(host) => sprintf(" --endpoint tcp://%s", host);
-  | None => "";
-  };
-};
-
-let process_port = (port) => {
-  switch(port) {
-  | Some(port) => sprintf(" --port %d", port);
-  | None => "";
-  };
-};
+let handle_uri = (uri) => {
+  host_uri := uri;
+  uri;
+}
 
 let process_post_tag = (num, tag) => {
   switch(tag) {
@@ -58,9 +50,8 @@ let process_post_tag = (num, tag) => {
 };
 
 let handle_post = (num, to_, tag) => {
-  sprintf(" --path /ts/%s", to_) ++ 
-  " --payload " ++ process_post_tag(num, tag) ++
-  " --mode post"
+  sprintf("%s/ts/%s", host_uri^, to_) ++ 
+  " --payload " ++ process_post_tag(num, tag)
 };
 
 let process_get_tag = (tag) => {
@@ -92,16 +83,6 @@ let handle_get_last = (func,from,tag,last) => {
   process_get_tag(tag) ++ process_func(func) ++ " --mode get"
 };
 
-let process_max_age = (max_age) => {
-  switch(max_age) {
-  | Some(max_age) => sprintf(" --max-age %d", max_age)
-  | None => ""
-  }
-};
-
-let handle_set = (host,port) => {
-  sprintf("host '%s'", host) ++ process_port(port)
-};
 
 let handle_delete_range = (from,tag,(t1,t2)) => {
   sprintf(" --path /ts/%s", from) ++ sprintf("/range/%d/%d", t1, t2) ++ 
@@ -110,7 +91,7 @@ let handle_delete_range = (from,tag,(t1,t2)) => {
 
 let process = (statement) => {
   switch(statement) {
-  | `Set (host,port) => handle_set(host,port)
+  | `Set (uri) => handle_uri(uri);
   | `Post(num, to_, tag) => handle_post(num, to_, tag)
   | `Get_since(func,from,tag,since) => handle_get_since(func,from,tag,since)
   | `Get_range(func,from,tag,range) => handle_get_range(func,from,tag,range)
