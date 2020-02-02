@@ -1,6 +1,6 @@
 open Printf;
 
-let host_uri = ref("http://localhost:8000");
+let host_uri = ref("http://127.0.0.1:8000");
 
 let mil = 1000 * 1000;
 
@@ -38,7 +38,7 @@ type value = [
 
 let handle_uri = (uri) => {
   host_uri := uri;
-  uri;
+  host_uri^
 }
 
 let process_payload = (num, tag) => {
