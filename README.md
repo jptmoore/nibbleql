@@ -1,7 +1,5 @@
 # nibbleql
 
-Client for nibbledb
-
 ```
 % docker run --network host -it jptmoore/nibbleql
 Welcome to nibbleql the query language for nibbledb
