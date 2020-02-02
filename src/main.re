@@ -42,7 +42,13 @@ let rec user_input = (prompt, cb) =>
   };
 
 let handle_input = (s) => {
-  parse_string(s) |> print_endline
+  let result = parse_string(s);
+  if (result != "") {
+    open Yojson.Basic;
+    let json = from_string(result);
+    let out = pretty_to_string(json);
+    print_endline(out);
+  }
 }
 
 let repl = () => {

@@ -5,4 +5,4 @@
 
 (executable
  (name main)
- (libraries lwt.unix linenoise cohttp cohttp-lwt cohttp-lwt-unix))
+ (libraries lwt.unix linenoise cohttp cohttp-lwt cohttp-lwt-unix yojson))
