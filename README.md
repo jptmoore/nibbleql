@@ -3,7 +3,7 @@
 Client for nibbledb
 
 ```
-john@air nibbleql % docker run --network host -it jptmoore/nibbleql
+% docker run --network host -it jptmoore/nibbleql
 Welcome to nibbleql the query language for nibbledb
 
 nibble> set host "https://localhost:8000";
@@ -56,6 +56,6 @@ nibble> delete from "sensor2" range 10m to 5m;
 nibble> delete from "sensor1" where "serial" is "A001" range 5s to 0s;
 
 nibble> quit
-john@air nibbleql %
+
 ```
 
