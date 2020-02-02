@@ -48,12 +48,6 @@ let process_payload = (num, tag) => {
   }
 };
 
-let handle_post = (num, to_, tag) => {
-  let uri = host_uri^ ++ "/ts/" ++ to_;
-  let payload = process_payload(num, tag);
-  Net.post(~uri, ~payload); 
-};
-
 let process_get_tag = (tag) => {
   switch(tag) {
   | Some((s1,s2)) => sprintf("/filter/%s/equals/%s", s1, s2)
@@ -68,26 +62,35 @@ let process_func = (func) => {
   }
 };
 
+let handle_post = (num, to_, tag) => {
+  let uri = sprintf("%s/ts/%s", host_uri^, to_);
+  let payload = process_payload(num, tag);
+  Net.post(~uri, ~payload); 
+};
+
+let gen_uri = (func,from,tag,cmd) => {
+  sprintf("%s/ts/%s", host_uri^, from) ++ cmd ++ 
+  process_get_tag(tag) ++ process_func(func);
+}
+
 let handle_get_since = (func,from,tag,since) => {
-  sprintf(" --path /ts/%s", from) ++ sprintf("/since/%d", since) ++ 
-  process_get_tag(tag) ++ process_func(func) ++ " --mode get"
+  let uri = gen_uri(func,from,tag,sprintf("/since/%d", since));
+  Net.get(~uri);  
 };
 
 let handle_get_range = (func,from,tag,(t1,t2)) => {
-  sprintf(" --path /ts/%s", from) ++ sprintf("/range/%d/%d", t1, t2) ++ 
-  process_get_tag(tag) ++ process_func(func) ++ " --mode get"
-};
-
-let handle_get_last = (func,from,tag,last) => {
-  let uri = sprintf("%s/ts/%s", host_uri^, from) ++ sprintf("/last/%d", last) ++ 
-  process_get_tag(tag) ++ process_func(func)
+  let uri = gen_uri(func,from,tag,sprintf("/range/%d/%d", t1, t2)); 
   Net.get(~uri);
 };
 
+let handle_get_last = (func,from,tag,last) => {
+  let uri = gen_uri(func,from,tag,sprintf("/last/%d", last)); 
+  Net.get(~uri);  
+};
 
 let handle_delete_range = (from,tag,(t1,t2)) => {
-  sprintf(" --path /ts/%s", from) ++ sprintf("/range/%d/%d", t1, t2) ++ 
-  process_get_tag(tag) ++ " --mode delete"
+  let uri = gen_uri(None,from,tag,sprintf("/range/%d/%d", t1, t2)); 
+  Net.delete(~uri);
 };
 
 let process = (statement) => {

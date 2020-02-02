@@ -24,3 +24,13 @@ let get_worker = (~uri) => {
 let get = (~uri) => {
   Lwt_main.run(get_worker(~uri));
 };
+
+let delete_worker = (~uri) => {
+  let headers = Cohttp.Header.of_list([]);
+  Client.delete(~headers=headers, Uri.of_string(uri)) >>=
+    ((_, body)) => body |> Cohttp_lwt.Body.to_string;
+}
+
+let delete = (~uri) => {
+  Lwt_main.run(delete_worker(~uri));
+};
