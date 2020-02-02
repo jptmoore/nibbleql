@@ -41,6 +41,10 @@ let rec user_input = (prompt, cb) =>
     user_input(prompt, cb);
   };
 
+let handle_input = (s) => {
+  parse_string(s) |> print_endline
+}
+
 let repl = () => {
   /*LNoise.set_multiline(true);*/
   LNoise.set_hints_callback(
@@ -70,7 +74,7 @@ let repl = () => {
       };
       LNoise.history_add(from_user) |> ignore;
       LNoise.history_save(~filename=".history") |> ignore;
-      parse_string(from_user) |> print_endline;
+      handle_input(from_user);
     }
   )
   |> user_input("nibble> ");

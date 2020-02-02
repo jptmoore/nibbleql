@@ -43,16 +43,15 @@ let handle_uri = (uri) => {
 
 let process_payload = (num, tag) => {
   switch(tag) {
-  | Some((s1,s2)) => sprintf("{\"%s\": \"%s\", \"value\": \"%f\"}", s1, s2, num)
-  | None => sprintf("{\"value\": \"%f\"}", num)
+  | Some((s1,s2)) => sprintf("{\"%s\": \"%s\", \"value\": %f}", s1, s2, num)
+  | None => sprintf("{\"value\": %f}", num)
   }
 };
 
 let handle_post = (num, to_, tag) => {
-  
   let uri = host_uri^ ++ "/ts/" ++ to_;
   let payload = process_payload(num, tag);
-  sprintf("Post %s to %s", payload, uri)
+  Net.post(~uri, ~payload); 
 };
 
 let process_get_tag = (tag) => {
@@ -80,8 +79,9 @@ let handle_get_range = (func,from,tag,(t1,t2)) => {
 };
 
 let handle_get_last = (func,from,tag,last) => {
-  sprintf(" --path /ts/%s", from) ++ sprintf("/last/%d", last) ++ 
-  process_get_tag(tag) ++ process_func(func) ++ " --mode get"
+  let uri = sprintf("%s/ts/%s", host_uri^, from) ++ sprintf("/last/%d", last) ++ 
+  process_get_tag(tag) ++ process_func(func)
+  Net.get(~uri);
 };
 
 
