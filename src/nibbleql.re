@@ -22,7 +22,7 @@ type since_t = int;
 type max_age_t = option(int);
 type range_t = (int,int);
 type to_t = string;
-type num_t = float;
+type num_t = list(float);
 type last_t = int;
 type method_t = string;
 type uri_t = string;
@@ -41,10 +41,20 @@ let handle_uri = (uri) => {
   host_uri^
 }
 
+let get_values_worker = (acc, value) => {
+  acc++"{\"value\":" ++ Float.to_string(value) ++ "},";
+}
+
+let gen_values = (values) => {
+  open String;
+  List.fold_left( (acc,x) => get_values_worker(acc, x), "[", values) |>
+    x => sub(x, 0, length(x)-1)  ++ "]";
+}
+
 let process_payload = (num, tag) => {
   switch(tag) {
-  | Some((s1,s2)) => sprintf("{\"%s\": \"%s\", \"value\": %f}", s1, s2, num)
-  | None => sprintf("{\"value\": %f}", num)
+  | Some((s1,s2)) => "not implemented";
+  | None => gen_values(num);
   }
 };
 

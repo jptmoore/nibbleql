@@ -25,6 +25,7 @@
 %token MINUTES
 %token HOURS
 %token DAYS
+%token COMMA
 
 %start <Nibbleql.value option> lang
 %%
@@ -35,7 +36,8 @@ lang:
 
 statement:
   | SET; host = host; { `Set (host) }
-  | POST; num = FLOAT; to_ = to_; tag = tag?;  { `Post (num, to_, tag) }
+  | POST; num = FLOAT; to_ = to_; tag = tag?;  { `Post ([num], to_, tag) }
+  | POST; nums = nums; to_ = to_; tag = tag?; { `Post (nums, to_, tag) }
   | GET; func = func?; from = from; tag = tag?; since = since; { `Get_since (func,from,tag,since) }
   | GET; func = func?; from = from; tag = tag?; range = range; { `Get_range (func,from,tag,range) }
   | GET; func = func?; from = from; tag = tag?; last = last; { `Get_last (func,from,tag,last) }
@@ -44,6 +46,9 @@ statement:
 
 host:
   HOST; s = STRING { s };
+
+nums:
+   nl = separated_list(COMMA, FLOAT)         { nl } ;
 
 func:
   MIN { "min" } | MAX; { "max"} | SUM; {"sum"} | COUNT; {"count"} | MEAN; {"mean"} | SD; {"sd"};
