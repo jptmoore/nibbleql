@@ -1,6 +1,6 @@
 open Printf;
 
-let host_uri = ref("http://127.0.0.1:8000");
+let host_uri = ref("http://localhost:5000");
 
 let mil = 1000 * 1000;
 

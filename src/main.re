@@ -62,7 +62,7 @@ let repl = () => {
     if (line != "set host ") {
       None;
     } else {
-      Some(("hint: \"http://foo.com:8080\"", LNoise.Blue, true));
+      Some(("hint: \"https://localhost:5000\";", LNoise.Blue, true));
     }
   );
   LNoise.history_load(~filename=".history") |> ignore;
@@ -70,6 +70,14 @@ let repl = () => {
   LNoise.set_completion_callback((line_so_far, ln_completions) =>
     if (line_so_far != "" && line_so_far.[0] == 'q') {
       ["quit"] |> List.iter(LNoise.add_completion(ln_completions));
+    } else if (line_so_far != "" && line_so_far.[0] == 'g') {
+      ["get "] |> List.iter(LNoise.add_completion(ln_completions));
+    } else if (line_so_far != "" && line_so_far.[0] == 'p') {
+      ["post "] |> List.iter(LNoise.add_completion(ln_completions));
+    } else if (line_so_far != "" && line_so_far.[0] == 'd') {
+      ["delete "] |> List.iter(LNoise.add_completion(ln_completions));
+    } else if (line_so_far != "" && line_so_far.[0] == 's') {
+      ["set host "] |> List.iter(LNoise.add_completion(ln_completions));
     }
   );
   ["Welcome to nibbleql the query language for nibbledb\n"]
