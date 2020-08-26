@@ -22,14 +22,19 @@ type since_t = int;
 type max_age_t = option(int);
 type range_t = (int,int);
 type to_t = string;
-type num_t = list(float);
 type last_t = int;
 type method_t = string;
 type uri_t = string;
+type tagset_t = list((string,string));
+type timestamp_t = int;
+type value_t = float;
+type datapoint_t = list((option(timestamp_t), option(tagset_t), value_t));
+
+
 
 type value = [
   | `Set(uri_t)
-  | `Post(num_t, to_t, tag_t)
+  | `Post(datapoint_t, to_t)
   | `Get_since(func_t,from_t,tag_t,since_t)
   | `Get_range(func_t,from_t,tag_t,range_t)
   | `Get_last(func_t,from_t,tag_t,last_t)
@@ -72,11 +77,15 @@ let process_func = (func) => {
   }
 };
 
-let handle_post = (num, to_, tag) => {
+/* let handle_post = (num, to_, tag) => {
   let uri = sprintf("%s/ts/%s", host_uri^, to_);
   let payload = process_payload(num, tag);
   Net.post(~uri, ~payload); 
-};
+}; */
+
+let handle_post = (datapoint, to_) => {
+  "woot";
+}
 
 let gen_uri = (func,from,tag,cmd) => {
   sprintf("%s/ts/%s", host_uri^, from) ++ cmd ++ 
@@ -106,7 +115,7 @@ let handle_delete_range = (from,tag,(t1,t2)) => {
 let process = (statement) => {
   switch(statement) {
   | `Set (uri) => handle_uri(uri);
-  | `Post(num, to_, tag) => handle_post(num, to_, tag)
+  | `Post(datapoint, to_) => handle_post(datapoint, to_)
   | `Get_since(func,from,tag,since) => handle_get_since(func,from,tag,since)
   | `Get_range(func,from,tag,range) => handle_get_range(func,from,tag,range)
   | `Get_last(func,from,tag,last) => handle_get_last(func,from,tag,last)

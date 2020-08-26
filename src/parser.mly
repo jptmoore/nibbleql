@@ -26,6 +26,13 @@
 %token HOURS
 %token DAYS
 %token COMMA
+%token LEFT_PAREN
+%token RIGHT_PAREN
+%token LEFT_BRACK
+%token RIGHT_BRACK
+%token EQUALS
+%token TIMESTAMP
+%token TAG
 
 %start <Nibbleql.value option> lang
 %%
@@ -36,8 +43,7 @@ lang:
 
 statement:
   | SET; host = host; { `Set (host) }
-  | POST; num = FLOAT; to_ = to_; tag = tag?;  { `Post ([num], to_, tag) }
-  | POST; nums = nums; to_ = to_; tag = tag?; { `Post (nums, to_, tag) }
+  | POST; dp_fields = dp_fields; to_ = to_; { `Post (dp_fields, to_) }
   | GET; func = func?; from = from; tag = tag?; since = since; { `Get_since (func,from,tag,since) }
   | GET; func = func?; from = from; tag = tag?; range = range; { `Get_range (func,from,tag,range) }
   | GET; func = func?; from = from; tag = tag?; last = last; { `Get_last (func,from,tag,last) }
@@ -47,8 +53,20 @@ statement:
 host:
   HOST; s = STRING { s };
 
-nums:
-   nl = separated_list(COMMA, FLOAT)         { nl } ;
+dp_fields:
+  dpl = separated_list(COMMA, dp_field)    { dpl };
+
+ts:
+  TIMESTAMP; EQUALS; n = INT; COMMA { n };
+
+dp_field:
+    LEFT_PAREN?; ts = ts?; tag_fields = tag_fields?; v = FLOAT; RIGHT_PAREN?  { (ts, tag_fields, v) } ;
+
+tag_fields:
+  TAG; EQUALS; LEFT_BRACK; tl = separated_list(COMMA, tag_field); RIGHT_BRACK; COMMA { tl };
+
+tag_field:
+  s1 = STRING; EQUALS; s2 = STRING;    { (s1,s2) };
 
 func:
   MIN { "min" } | MAX; { "max"} | SUM; {"sum"} | COUNT; {"count"} | MEAN; {"mean"} | SD; {"sd"};

@@ -55,7 +55,14 @@ rule read =
   | "m" | "min" | "minutes" { MINUTES }
   | "h" | "hr" | "hours" { HOURS }
   | "d" | "days" { DAYS }
+  | "TIMESTAMP" | "timestamp" { TIMESTAMP }
+  | "TAG" | "tag" { TAG }
   | ','      { COMMA }
+  | '('      { LEFT_PAREN }
+  | ')'      { RIGHT_PAREN }
+  | '['      { LEFT_BRACK }
+  | ']'      { RIGHT_BRACK }
+  | '='      { EQUALS }
   | '"'      { read_string (Buffer.create 17) lexbuf }
   | _ { raise (SyntaxError ("Unexpected char: " ^ Lexing.lexeme lexbuf)) }
   | eof      { EOF }
