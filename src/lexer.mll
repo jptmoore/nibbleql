@@ -51,10 +51,10 @@ rule read =
   | "COUNT" | "count" { COUNT }
   | "MEAN" | "mean" { MEAN }
   | "SD" | "sd" { SD }
-  | "s" | "sec" | "seconds" { SECONDS }
-  | "m" | "min" | "minutes" { MINUTES }
-  | "h" | "hr" | "hours" { HOURS }
-  | "d" | "days" { DAYS }
+  | "s" | "seconds" | "second" { SECONDS }
+  | "m" | "minutes" | "minute" { MINUTES }
+  | "h" | "hours" | "hour" { HOURS }
+  | "d" | "days" | "day" { DAYS }
   | "TIMESTAMP" | "timestamp" { TIMESTAMP }
   | "TAG" | "tag" { TAG }
   | "VALUE" | "value" { VALUE }
