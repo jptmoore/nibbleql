@@ -12,7 +12,7 @@ let error_info = lexbuf => {
 };
 
 let parse_with_error = lexbuf =>
-  try(Parser.lang(Lexer.read, lexbuf)) {
+  try(Parser.prog(Lexer.read, lexbuf)) {
   | SyntaxError(msg) =>
     let info = error_info(lexbuf);
     Printf.printf("%s %s", info, msg);

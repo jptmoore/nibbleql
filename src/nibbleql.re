@@ -28,13 +28,13 @@ type uri_t = string;
 type tagset_t = list((string,string));
 type timestamp_t = int;
 type value_t = float;
-type datapoint_t = list((option(timestamp_t), option(tagset_t), value_t));
+type data_t = list((option(timestamp_t), option(tagset_t), value_t));
 
 
 
 type value = [
   | `Set(uri_t)
-  | `Post(datapoint_t, to_t)
+  | `Post(data_t, to_t)
   | `Get_since(func_t,from_t,tag_t,since_t)
   | `Get_range(func_t,from_t,tag_t,range_t)
   | `Get_last(func_t,from_t,tag_t,last_t)
@@ -63,7 +63,7 @@ let process_func = (func) => {
 
 let get_tag_worker = (acc, tag) => {
   let (n,v) = tag;
-  acc++Printf.sprintf("{\"%s\":\"%s\"},", n, v);
+  acc++sprintf("{\"%s\":\"%s\"},", n, v);
 }
 
 let gen_tag = (data) => {
@@ -73,25 +73,24 @@ let gen_tag = (data) => {
 }
 
 let get_values_worker = (acc, data) => {
-  open Printf;
   let (ts, t, v) = data;
   switch (ts, t, v) {
   | (Some(ts), Some(t), v) =>
     let timestamp = sprintf("\"timestamp\": %s", Int.to_string(ts));
     let tag = sprintf("\"tag\": %s", gen_tag(t));
     let value = sprintf("\"value\": %s", Float.to_string(v));
-    acc++Printf.sprintf("{%s,%s,%s}", timestamp, tag, value)++",";
+    acc++sprintf("{%s,%s,%s}", timestamp, tag, value)++",";
   | (Some(ts), None, v) =>
     let timestamp = sprintf("\"timestamp\": %s", Int.to_string(ts));
     let value = sprintf("\"value\": %s", Float.to_string(v));
-    acc++Printf.sprintf("{%s,%s}", timestamp, value)++",";
+    acc++sprintf("{%s,%s}", timestamp, value)++",";
   | (None, Some(t), v) =>
     let tag = sprintf("\"tag\": %s", gen_tag(t)); 
     let value = sprintf("\"value\": %s", Float.to_string(v));
-    acc++Printf.sprintf("{%s,%s}", tag, value)++",";
+    acc++sprintf("{%s,%s}", tag, value)++",";
   | (None, None, v) =>
     let value = sprintf("\"value\": %s", Float.to_string(v));
-    acc++Printf.sprintf("{%s}", value)++",";
+    acc++sprintf("{%s}", value)++",";
   }
 
 }
@@ -103,9 +102,9 @@ let gen_values = (data) => {
 }
 
 
-let handle_post = (datapoint, to_) => {
+let handle_post = (data, to_) => {
   let uri = sprintf("%s/ts/%s", host_uri^, to_);
-  let payload = gen_values(datapoint);
+  let payload = gen_values(data);
   Net.post(~uri, ~payload); 
 }
 
@@ -137,7 +136,7 @@ let handle_delete_range = (from,tag,(t1,t2)) => {
 let process = (statement) => {
   switch(statement) {
   | `Set (uri) => handle_uri(uri);
-  | `Post(datapoint, to_) => handle_post(datapoint, to_)
+  | `Post(data, to_target) => handle_post(data, to_target)
   | `Get_since(func,from,tag,since) => handle_get_since(func,from,tag,since)
   | `Get_range(func,from,tag,range) => handle_get_range(func,from,tag,range)
   | `Get_last(func,from,tag,last) => handle_get_last(func,from,tag,last)

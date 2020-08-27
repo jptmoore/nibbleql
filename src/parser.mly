@@ -35,16 +35,16 @@
 %token VALUE
 %token SEMI_COLON
 
-%start <Nibbleql.value option> lang
+%start <Nibbleql.value option> prog
 %%
 
-lang:
+prog:
   | v = value; SEMI_COLON { Some v }
   | EOF       { None   } ;
 
 value:
   | SET; host = host; { `Set (host) }
-  | POST; dp_fields = dp_fields; to_ = to_; { `Post (dp_fields, to_) }
+  | POST; data_items = data_items; to_target = to_target; { `Post (data_items, to_target) }
   | GET; func = func?; from = from; tag = tag?; since = since; { `Get_since (func,from,tag,since) }
   | GET; func = func?; from = from; tag = tag?; range = range; { `Get_range (func,from,tag,range) }
   | GET; func = func?; from = from; tag = tag?; last = last; { `Get_last (func,from,tag,last) }
@@ -54,8 +54,8 @@ value:
 host:
   HOST; s = STRING { s };
 
-dp_fields:
-  dpl = separated_list(COMMA, dp_field)    { dpl };
+data_items:
+  dpl = separated_list(COMMA, data_item)    { dpl };
 
 ts:
   TIMESTAMP; EQUALS; n = INT; COMMA { n };
@@ -63,13 +63,13 @@ ts:
 num:
   VALUE?; EQUALS?; v = FLOAT; { v };
 
-dp_field:
-    LEFT_PAREN?; ts = ts?; tag_fields = tag_fields?; num = num; RIGHT_PAREN?  { (ts, tag_fields, num) } ;
+data_item:
+    LEFT_PAREN?; ts = ts?; tag_items = tag_items?; num = num; RIGHT_PAREN?  { (ts, tag_items, num) } ;
 
-tag_fields:
-  TAG; EQUALS; LEFT_BRACK; tl = separated_list(COMMA, tag_field); RIGHT_BRACK; COMMA { tl };
+tag_items:
+  TAG; EQUALS; LEFT_BRACK; tl = separated_list(COMMA, tag_item); RIGHT_BRACK; COMMA { tl };
 
-tag_field:
+tag_item:
   s1 = STRING; EQUALS; s2 = STRING;    { (s1,s2) };
 
 func:
@@ -78,7 +78,7 @@ func:
 from:
   FROM; s = STRING { s };
   
-to_:
+to_target:
   TO; s = STRING { s };
 
 range:
