@@ -41,9 +41,9 @@ type value = [
   | `Delete_range(from_t,tag_t,range_t)
 ];
 
-let handle_uri = (uri) => {
+let set_host = (uri) => {
   host_uri := uri;
-  host_uri^
+  "";
 }
 
 
@@ -135,7 +135,7 @@ let handle_delete_range = (from,tag,(t1,t2)) => {
 
 let process = (statement) => {
   switch(statement) {
-  | `Set (uri) => handle_uri(uri);
+  | `Set (uri) => set_host(uri);
   | `Post(data, to_target) => handle_post(data, to_target)
   | `Get_since(func,from,tag,since) => handle_get_since(func,from,tag,since)
   | `Get_range(func,from,tag,range) => handle_get_range(func,from,tag,range)

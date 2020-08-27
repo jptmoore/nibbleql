@@ -57,14 +57,6 @@ let handle_input = s => {
 };
 
 let repl = () => {
-  /*LNoise.set_multiline(true);*/
-  LNoise.set_hints_callback(line =>
-    if (line != "set host ") {
-      None;
-    } else {
-      Some(("hint: \"https://localhost:5000\";", LNoise.Blue, true));
-    }
-  );
   LNoise.history_load(~filename=".history") |> ignore;
   LNoise.history_set(~max_length=100) |> ignore;
   LNoise.set_completion_callback((line_so_far, ln_completions) =>
