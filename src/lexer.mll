@@ -57,6 +57,7 @@ rule read =
   | "d" | "days" { DAYS }
   | "TIMESTAMP" | "timestamp" { TIMESTAMP }
   | "TAG" | "tag" { TAG }
+  | "VALUE" | "value" { VALUE }
   | ','      { COMMA }
   | '('      { LEFT_PAREN }
   | ')'      { RIGHT_PAREN }

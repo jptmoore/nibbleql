@@ -33,6 +33,7 @@
 %token EQUALS
 %token TIMESTAMP
 %token TAG
+%token VALUE
 
 %start <Nibbleql.value option> lang
 %%
@@ -59,8 +60,11 @@ dp_fields:
 ts:
   TIMESTAMP; EQUALS; n = INT; COMMA { n };
 
+num:
+  VALUE?; EQUALS?; v = FLOAT; { v };
+
 dp_field:
-    LEFT_PAREN?; ts = ts?; tag_fields = tag_fields?; v = FLOAT; RIGHT_PAREN?  { (ts, tag_fields, v) } ;
+    LEFT_PAREN?; ts = ts?; tag_fields = tag_fields?; num = num; RIGHT_PAREN?  { (ts, tag_fields, num) } ;
 
 tag_fields:
   TAG; EQUALS; LEFT_BRACK; tl = separated_list(COMMA, tag_field); RIGHT_BRACK; COMMA { tl };
