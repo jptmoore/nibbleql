@@ -13,7 +13,6 @@
 %token SINCE
 %token RANGE
 %token EOF
-%token SEMI_COLON
 %token MIN
 %token MAX
 %token SUM
@@ -34,15 +33,16 @@
 %token TIMESTAMP
 %token TAG
 %token VALUE
+%token SEMI_COLON
 
 %start <Nibbleql.value option> lang
 %%
 
 lang:
-  | v = statement; SEMI_COLON { Some v }
+  | v = value; SEMI_COLON { Some v }
   | EOF       { None   } ;
 
-statement:
+value:
   | SET; host = host; { `Set (host) }
   | POST; dp_fields = dp_fields; to_ = to_; { `Post (dp_fields, to_) }
   | GET; func = func?; from = from; tag = tag?; since = since; { `Get_since (func,from,tag,since) }
