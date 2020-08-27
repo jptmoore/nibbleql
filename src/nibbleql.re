@@ -46,22 +46,6 @@ let handle_uri = (uri) => {
   host_uri^
 }
 
-let get_values_worker = (acc, value) => {
-  acc++"{\"value\":" ++ Float.to_string(value) ++ "},";
-}
-
-let gen_values = (values) => {
-  open String;
-  List.fold_left( (acc,x) => get_values_worker(acc, x), "[", values) |>
-    x => sub(x, 0, length(x)-1)  ++ "]";
-}
-
-let process_payload = (num, tag) => {
-  switch(tag) {
-  | Some((s1,s2)) => "not implemented";
-  | None => gen_values(num);
-  }
-};
 
 let process_get_tag = (tag) => {
   switch(tag) {
@@ -77,14 +61,52 @@ let process_func = (func) => {
   }
 };
 
-/* let handle_post = (num, to_, tag) => {
-  let uri = sprintf("%s/ts/%s", host_uri^, to_);
-  let payload = process_payload(num, tag);
-  Net.post(~uri, ~payload); 
-}; */
+let get_tag_worker = (acc, tag) => {
+  let (n,v) = tag;
+  acc++Printf.sprintf("{\"%s\":\"%s\"},", n, v);
+}
+
+let gen_tag = (data) => {
+  open String;
+  List.fold_left( (acc,x) => get_tag_worker(acc, x), "[", data) |>
+    x => sub(x, 0, length(x)-1)  ++ "]";
+}
+
+let get_values_worker = (acc, data) => {
+  open Printf;
+  let (ts, t, v) = data;
+  switch (ts, t, v) {
+  | (Some(ts), Some(t), v) =>
+    let timestamp = sprintf("\"timestamp\": %s", Int.to_string(ts));
+    let tag = sprintf("\"tag\": %s", gen_tag(t));
+    let value = sprintf("\"value\": %s", Float.to_string(v));
+    acc++Printf.sprintf("{%s,%s,%s}", timestamp, tag, value)++",";
+  | (Some(ts), None, v) =>
+    let timestamp = sprintf("\"timestamp\": %s", Int.to_string(ts));
+    let value = sprintf("\"value\": %s", Float.to_string(v));
+    acc++Printf.sprintf("{%s,%s}", timestamp, value)++",";
+  | (None, Some(t), v) =>
+    let tag = sprintf("\"tag\": %s", gen_tag(t)); 
+    let value = sprintf("\"value\": %s", Float.to_string(v));
+    acc++Printf.sprintf("{%s,%s}", tag, value)++",";
+  | (None, None, v) =>
+    let value = sprintf("\"value\": %s", Float.to_string(v));
+    acc++Printf.sprintf("{%s}", value)++",";
+  }
+
+}
+
+let gen_values = (data) => {
+  open String;
+  List.fold_left( (acc,x) => get_values_worker(acc, x), "[", data) |>
+    x => sub(x, 0, length(x)-1)  ++ "]";
+}
+
 
 let handle_post = (datapoint, to_) => {
-  "woot";
+  let uri = sprintf("%s/ts/%s", host_uri^, to_);
+  let payload = gen_values(datapoint);
+  Net.post(~uri, ~payload); 
 }
 
 let gen_uri = (func,from,tag,cmd) => {
