@@ -10,27 +10,31 @@ let post_worker = (~uri, ~payload) => {
     (((_, body)) => body |> Cohttp_lwt.Body.to_string);
 };
 
-
-let post = (~uri, ~payload) => {
-  Lwt_main.run(post_worker(~uri, ~payload));
-}
-
-let get_worker = (~uri) => {
+let get_worker = (~uri, ~payload) => {
   let headers = Cohttp.Header.of_list([("Content-Type", content_format^)]);
   Client.get(~headers=headers, Uri.of_string(uri)) >>=
     ((_, body)) => body |> Cohttp_lwt.Body.to_string;
 }
 
-let get = (~uri) => {
-  Lwt_main.run(get_worker(~uri));
-};
-
-let delete_worker = (~uri) => {
+let delete_worker = (~uri, ~payload) => {
   let headers = Cohttp.Header.of_list([]);
   Client.delete(~headers=headers, Uri.of_string(uri)) >>=
     ((_, body)) => body |> Cohttp_lwt.Body.to_string;
 }
 
-let delete = (~uri) => {
-  Lwt_main.run(delete_worker(~uri));
-};
+let call_with = (~fn, ~uri, ~payload="", ()) => {
+  Lwt_main.run(
+    Lwt.catch(
+      () => fn(~uri, ~payload),
+      fun
+      | Failure(m) => Lwt.return(m)
+      | exn => Lwt.fail(exn)
+    )
+  )
+}
+
+let post = (~uri, ~payload) => call_with(~fn=post_worker, ~uri, ~payload, ());
+
+let get = (~uri) => call_with(~fn=get_worker, ~uri, ());
+
+let delete = (~uri) => call_with(~fn=delete_worker, ~uri, ());
