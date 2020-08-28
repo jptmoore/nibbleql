@@ -31,7 +31,6 @@ type value_t = float;
 type data_t = list((option(timestamp_t), option(tagset_t), value_t));
 type filter_t = option(list((string,string)));
 
-
 type value = [
   | `Set(uri_t)
   | `Post(data_t, to_t)
@@ -116,7 +115,10 @@ let gen_uri = (func,from,tag,cmd) => {
 let handle_get_since = (func,from,filter,since) => {
   /* let uri = gen_uri(func,from,tag,sprintf("/since/%d", since));
   Net.get(~uri);   */
-  "woot";
+  switch (filter) {
+  | None => "0";
+  | Some(lis) => sprintf("%d", List.length(lis));
+  }
 };
 
 let handle_get_range = (func,from,tag,(t1,t2)) => {
@@ -138,7 +140,7 @@ let process = (statement) => {
   switch(statement) {
   | `Set (uri) => set_host(uri);
   | `Post(data, to_target) => handle_post(data, to_target)
-  | `Get_since(func,from,filter_or,since) => handle_get_since(func,from,filter_or,since)
+  | `Get_since(func,from,filter,since) => handle_get_since(func,from,filter,since)
   | `Get_range(func,from,tag,range) => handle_get_range(func,from,tag,range)
   | `Get_last(func,from,tag,last) => handle_get_last(func,from,tag,last)
   | `Delete_range(from,tag,range) => handle_delete_range(from,tag,range)

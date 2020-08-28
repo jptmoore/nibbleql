@@ -92,9 +92,10 @@ range:
 last:
   LAST; n = INT { n };
 
+op: OR; | AND; {};
 
 filter_items:
-  | lis = separated_nonempty_list(OR, filter_item); { lis };
+  | lis = separated_nonempty_list(op, filter_item); { lis };
 
 filter_item:
   WHERE; s1 = STRING; IS; s2 = STRING { (s1,s2) } ;
