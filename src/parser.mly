@@ -34,6 +34,8 @@
 %token TAG
 %token VALUE
 %token SEMI_COLON
+%token OR
+%token AND
 
 %start <Nibbleql.value option> prog
 %%
@@ -45,10 +47,10 @@ prog:
 value:
   | SET; host = host; { `Set (host) }
   | POST; data_items = data_items; to_target = to_target; { `Post (data_items, to_target) }
-  | GET; func = func?; from = from; tag = tag?; since = since; { `Get_since (func,from,tag,since) }
-  | GET; func = func?; from = from; tag = tag?; range = range; { `Get_range (func,from,tag,range) }
-  | GET; func = func?; from = from; tag = tag?; last = last; { `Get_last (func,from,tag,last) }
-  | DELETE; from = from; tag = tag?; range = range; { `Delete_range (from,tag,range) }
+  | GET; func = func?; from = from; filter_items = filter_items?; since = since; { `Get_since (func,from,filter_items,since) }
+  | GET; func = func?; from = from; filter_item = filter_item?; range = range; { `Get_range (func,from,filter_item,range) }
+  | GET; func = func?; from = from; filter_item  = filter_item?; last = last; { `Get_last (func,from,filter_item,last) }
+  | DELETE; from = from; filter_item = filter_item?; range = range; { `Delete_range (from,filter_item,range) }
 
 
 host:
@@ -90,7 +92,11 @@ range:
 last:
   LAST; n = INT { n };
 
-tag:
+
+filter_items:
+  | lis = separated_nonempty_list(OR, filter_item); { lis };
+
+filter_item:
   WHERE; s1 = STRING; IS; s2 = STRING { (s1,s2) } ;
 
 since:
