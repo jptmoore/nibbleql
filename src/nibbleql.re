@@ -53,7 +53,7 @@ let process_get_tag = (tag) => {
   }
 };
 
-let process_func = (func) => {
+let gen_func_s = (func) => {
   switch(func) {
   | Some(func) => sprintf("/%s", func)
   | None => ""
@@ -107,9 +107,8 @@ let handle_post = (data, to_) => {
   Net.post(~uri, ~payload); 
 }
 
-let gen_uri = (func,from,tag,cmd) => {
-  sprintf("%s/ts/%s", host_uri^, from) ++ cmd ++ 
-  process_get_tag(tag) ++ process_func(func);
+let gen_series_s = (series) => {
+  sprintf("%s/ts/%s", host_uri^, series);
 }
 
 let gen_filter_worker = (acc, x) => {
@@ -130,32 +129,41 @@ let gen_value_filter = (data) => {
 
 let gen_filter = (data) => {
   open Printf;
-  sprintf("filter/%s/equals/%s", gen_name_filter(data), gen_value_filter(data));
+  sprintf("/filter/%s/equals/%s", gen_name_filter(data), gen_value_filter(data));
 }
 
-let handle_get_since = (func,from,filter,since) => {
-  let tag = switch (filter) {
-  | None => "";
-  | Some(data) => gen_filter(data)
-  }
-  let uri = gen_uri(func,from,None,sprintf("/since/%d/%s", since,tag));
-  uri;
+let gen_filter_s = (filter) => {
+  switch (filter) {
+    | None => "";
+    | Some(data) => gen_filter(data)
+  };
+}
+
+let handle_get_since = (func,series,filter,since) => {
+  let func_s = gen_func_s(func);
+  let filter_s = gen_filter_s(filter);
+  let since_s = sprintf("/since/%d", since);
+  let series_s = gen_series_s(series);
+  series_s ++ since_s ++ filter_s ++ func_s;
   /* Net.get(~uri); */
 };
 
 let handle_get_range = (func,from,tag,(t1,t2)) => {
-  let uri = gen_uri(func,from,tag,sprintf("/range/%d/%d", t1, t2)); 
-  Net.get(~uri);
+  /* let uri = gen_uri(func,from,tag,sprintf("/range/%d/%d", t1, t2)); 
+  Net.get(~uri); */
+  "todo"
 };
 
 let handle_get_last = (func,from,tag,last) => {
-  let uri = gen_uri(func,from,tag,sprintf("/last/%d", last)); 
-  Net.get(~uri);  
+  /* let uri = gen_uri(func,from,tag,sprintf("/last/%d", last)); 
+  Net.get(~uri);   */
+  "todo"
 };
 
 let handle_delete_range = (from,tag,(t1,t2)) => {
-  let uri = gen_uri(None,from,tag,sprintf("/range/%d/%d", t1, t2)); 
-  Net.delete(~uri);
+  /* let uri = gen_uri(None,from,tag,sprintf("/range/%d/%d", t1, t2)); 
+  Net.delete(~uri); */
+  "todo"
 };
 
 let process = (statement) => {
