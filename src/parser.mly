@@ -47,10 +47,10 @@ prog:
 value:
   | SET; host = host; { `Set (host) }
   | POST; data_items = data_items; to_target = to_target; { `Post (data_items, to_target) }
-  | GET; func = func?; from = from; filter_items = filter_items?; since = since; { `Get_since (func,from,filter_items,since) }
-  | GET; func = func?; from = from; filter_items = filter_items?; range = range; { `Get_range (func,from,filter_items,range) }
-  | GET; func = func?; from = from; filter_items  = filter_items?; last = last; { `Get_last (func,from,filter_items,last) }
-  | DELETE; from = from; filter_items = filter_items?; range = range; { `Delete_range (from,filter_items,range) }
+  | GET; func = func?; from = from; since = since; filter_items = filter_items?;  { `Get_since (func,from,filter_items,since) }
+  | GET; func = func?; from = from; range = range;  filter_items = filter_items?;  { `Get_range (func,from,filter_items,range) }
+  | GET; func = func?; from = from; last = last; filter_items  = filter_items?;  { `Get_last (func,from,filter_items,last) }
+  | DELETE; from = from; range = range; filter_items = filter_items?;  { `Delete_range (from,filter_items,range) }
 
 
 host:
