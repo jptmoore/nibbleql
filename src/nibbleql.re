@@ -135,8 +135,8 @@ let handle_get_since = (func,series,filter,since) => {
   let filter_s = gen_filter_s(filter);
   let since_s = sprintf("/since/%d", since);
   let series_s = gen_series_s(series);
-  series_s ++ since_s ++ filter_s ++ func_s;
-  /* Net.get(~uri); */
+  let uri = series_s ++ since_s ++ filter_s ++ func_s;
+  Net.get(~uri);
 };
 
 let handle_get_range = (func,series,filter,(t1,t2)) => {
@@ -144,8 +144,8 @@ let handle_get_range = (func,series,filter,(t1,t2)) => {
   let func_s = gen_func_s(func);
   let filter_s = gen_filter_s(filter);
   let series_s = gen_series_s(series);
-  series_s ++ range_s ++ filter_s ++ func_s;  
-  /* Net.get(~uri); */
+  let uri = series_s ++ range_s ++ filter_s ++ func_s;  
+  Net.get(~uri);
 };
 
 let handle_get_last = (func,series,filter,last) => {
@@ -153,16 +153,16 @@ let handle_get_last = (func,series,filter,last) => {
   let func_s = gen_func_s(func);
   let filter_s = gen_filter_s(filter);
   let series_s = gen_series_s(series);
-  series_s ++ last_s ++ filter_s ++ func_s;  
-  /* Net.get(~uri);   */
+  let uri = series_s ++ last_s ++ filter_s ++ func_s;  
+  Net.get(~uri);
 };
 
 let handle_delete_range = (series,filter,(t1,t2)) => {
   let delete_s = sprintf("/range/%d/%d", t1, t2);
   let filter_s = gen_filter_s(filter);
   let series_s = gen_series_s(series);
-  series_s ++ delete_s ++ filter_s;  
-  /* Net.delete(~uri); */
+  let uri = series_s ++ delete_s ++ filter_s;  
+  Net.delete(~uri);
 };
 
 let process = (statement) => {
