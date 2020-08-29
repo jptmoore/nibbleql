@@ -72,7 +72,7 @@ tag_items:
   TAG; EQUALS; LEFT_BRACK; tl = separated_list(COMMA, tag_item); RIGHT_BRACK; COMMA { tl };
 
 tag_item:
-  s1 = STRING; EQUALS; s2 = STRING;    { (s1,s2) };
+  LEFT_PAREN?; s1 = STRING; EQUALS; s2 = STRING; RIGHT_PAREN?   { (s1,s2) };
 
 func:
   MIN { "min" } | MAX; { "max"} | SUM; {"sum"} | COUNT; {"count"} | MEAN; {"mean"} | SD; {"sd"};
