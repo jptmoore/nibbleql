@@ -112,13 +112,35 @@ let gen_uri = (func,from,tag,cmd) => {
   process_get_tag(tag) ++ process_func(func);
 }
 
+let gen_filter_worker = (acc, x) => {
+  acc++Printf.sprintf("%s,", x);
+}
+
+let gen_name_filter = (data) => {
+  open String;
+  List.fold_left( (acc,(n,_)) => gen_filter_worker(acc, n), "", data) |>
+    x => sub(x, 0, length(x)-1);
+}
+
+let gen_value_filter = (data) => {
+  open String;
+  List.fold_left( (acc,(_,v)) => gen_filter_worker(acc, v), "", data) |>
+    x => sub(x, 0, length(x)-1);
+}
+
+let gen_filter = (data) => {
+  open Printf;
+  sprintf("filter/%s/equals/%s", gen_name_filter(data), gen_value_filter(data));
+}
+
 let handle_get_since = (func,from,filter,since) => {
-  /* let uri = gen_uri(func,from,tag,sprintf("/since/%d", since));
-  Net.get(~uri);   */
-  switch (filter) {
-  | None => "0";
-  | Some(lis) => sprintf("%d", List.length(lis));
+  let tag = switch (filter) {
+  | None => "";
+  | Some(data) => gen_filter(data)
   }
+  let uri = gen_uri(func,from,None,sprintf("/since/%d/%s", since,tag));
+  uri;
+  /* Net.get(~uri); */
 };
 
 let handle_get_range = (func,from,tag,(t1,t2)) => {
