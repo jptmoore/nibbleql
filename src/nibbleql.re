@@ -17,7 +17,6 @@ let get_days = (n) => get_time() - (n * mil * 60 * 60 * 24);
 
 type func_t = option(string);
 type from_t = string;
-type tag_t = option((string,string));
 type since_t = int;
 type max_age_t = option(int);
 type range_t = (int,int);
@@ -44,14 +43,6 @@ let set_host = (uri) => {
   host_uri := uri;
   "";
 }
-
-
-let process_get_tag = (tag) => {
-  switch(tag) {
-  | Some((s1,s2)) => sprintf("/filter/%s/equals/%s", s1, s2)
-  | None => ""
-  }
-};
 
 let gen_func_s = (func) => {
   switch(func) {
