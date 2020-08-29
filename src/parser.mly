@@ -78,7 +78,7 @@ func:
   MIN { "min" } | MAX; { "max"} | SUM; {"sum"} | COUNT; {"count"} | MEAN; {"mean"} | SD; {"sd"};
 
 series:
-  l = separated_list(COMMA, STRING); { l };
+  l = separated_nonempty_list(COMMA, STRING); { l };
 
 range:
   | RANGE; n1 = INT; SECONDS; TO; n2 = INT; SECONDS { (Nibbleql.get_seconds(n1), Nibbleql.get_seconds(n2))}

@@ -94,18 +94,31 @@ let gen_values = (data) => {
     x => sub(x, 0, length(x)-1)  ++ "]";
 }
 
-let gen_series_s = (series) => {
+let gen_series_worker = (acc, data) => {
   open String;
-  List.fold_left( (acc,x) => acc++trim(x)++",", "", series) |>
+  acc++trim(data)++","
+}
+
+let gen_series = (series) => {
+  open String;
+  List.fold_left( (acc,x) => gen_series_worker(acc, x), "", series) |>
     x => sub(x, 0, length(x)-1);
 }
 
+let gen_series_s = (series) => {
+  gen_series(series);
+}
+
 let handle_post = (data, series) => {
-  let series = gen_series_s(series);
-  let uri_prefix = gen_uri_prefix_s();
+  let series_s = gen_series_s(series);
+  let uri_prefix_s = gen_uri_prefix_s();
   let payload = gen_values(data);
-  let uri = uri_prefix ++ series;
-  Net.post(~uri, ~payload); 
+  let uri = uri_prefix_s ++ series_s;
+  if (List.length(series) > 1) {
+    "Can POST data to one series only"
+  } else {
+    Net.post(~uri, ~payload); 
+  }
 }
 
 let gen_filter_worker = (acc, x) => {
