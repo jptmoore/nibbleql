@@ -35,9 +35,9 @@ type value = [
   | `Set(uri_t)
   | `Post(data_t, to_t)
   | `Get_since(func_t,from_t,filter_t,since_t)
-  | `Get_range(func_t,from_t,tag_t,range_t)
-  | `Get_last(func_t,from_t,tag_t,last_t)
-  | `Delete_range(from_t,tag_t,range_t)
+  | `Get_range(func_t,from_t,filter_t,range_t)
+  | `Get_last(func_t,from_t,filter_t,last_t)
+  | `Delete_range(from_t,filter_t,range_t)
 ];
 
 let set_host = (uri) => {
@@ -148,22 +148,30 @@ let handle_get_since = (func,series,filter,since) => {
   /* Net.get(~uri); */
 };
 
-let handle_get_range = (func,from,tag,(t1,t2)) => {
-  /* let uri = gen_uri(func,from,tag,sprintf("/range/%d/%d", t1, t2)); 
-  Net.get(~uri); */
-  "todo"
+let handle_get_range = (func,series,filter,(t1,t2)) => {
+  let range_s = sprintf("/range/%d/%d", t1, t2); 
+  let func_s = gen_func_s(func);
+  let filter_s = gen_filter_s(filter);
+  let series_s = gen_series_s(series);
+  series_s ++ range_s ++ filter_s ++ func_s;  
+  /* Net.get(~uri); */
 };
 
-let handle_get_last = (func,from,tag,last) => {
-  /* let uri = gen_uri(func,from,tag,sprintf("/last/%d", last)); 
-  Net.get(~uri);   */
-  "todo"
+let handle_get_last = (func,series,filter,last) => {
+  let last_s = sprintf("/last/%d", last); 
+  let func_s = gen_func_s(func);
+  let filter_s = gen_filter_s(filter);
+  let series_s = gen_series_s(series);
+  series_s ++ last_s ++ filter_s ++ func_s;  
+  /* Net.get(~uri);   */
 };
 
-let handle_delete_range = (from,tag,(t1,t2)) => {
-  /* let uri = gen_uri(None,from,tag,sprintf("/range/%d/%d", t1, t2)); 
-  Net.delete(~uri); */
-  "todo"
+let handle_delete_range = (series,filter,(t1,t2)) => {
+  let delete_s = sprintf("/range/%d/%d", t1, t2);
+  let filter_s = gen_filter_s(filter);
+  let series_s = gen_series_s(series);
+  series_s ++ delete_s ++ filter_s;  
+  /* Net.delete(~uri); */
 };
 
 let process = (statement) => {
@@ -171,8 +179,8 @@ let process = (statement) => {
   | `Set (uri) => set_host(uri);
   | `Post(data, to_target) => handle_post(data, to_target)
   | `Get_since(func,from,filter,since) => handle_get_since(func,from,filter,since)
-  | `Get_range(func,from,tag,range) => handle_get_range(func,from,tag,range)
-  | `Get_last(func,from,tag,last) => handle_get_last(func,from,tag,last)
-  | `Delete_range(from,tag,range) => handle_delete_range(from,tag,range)
+  | `Get_range(func,from,filter,range) => handle_get_range(func,from,filter,range)
+  | `Get_last(func,from,filter,last) => handle_get_last(func,from,filter,last)
+  | `Delete_range(from,filter,range) => handle_delete_range(from,filter,range)
   };
 };
