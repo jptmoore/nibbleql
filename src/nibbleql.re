@@ -16,11 +16,10 @@ let get_hours = (n) => get_time() - (n * mil * 60 * 60);
 let get_days = (n) => get_time() - (n * mil * 60 * 60 * 24);
 
 type func_t = option(string);
-type from_t = string;
 type since_t = int;
 type max_age_t = option(int);
 type range_t = (int,int);
-type to_t = string;
+type series_t = list(string);
 type last_t = int;
 type method_t = string;
 type uri_t = string;
@@ -32,16 +31,20 @@ type filter_t = option(list((string,string)));
 
 type value = [
   | `Set(uri_t)
-  | `Post(data_t, to_t)
-  | `Get_since(func_t,from_t,filter_t,since_t)
-  | `Get_range(func_t,from_t,filter_t,range_t)
-  | `Get_last(func_t,from_t,filter_t,last_t)
-  | `Delete_range(from_t,filter_t,range_t)
+  | `Post(data_t, series_t)
+  | `Get_since(func_t,series_t,filter_t,since_t)
+  | `Get_range(func_t,series_t,filter_t,range_t)
+  | `Get_last(func_t,series_t,filter_t,last_t)
+  | `Delete_range(series_t,filter_t,range_t)
 ];
 
 let set_host = (uri) => {
   host_uri := uri;
   "";
+}
+
+let gen_uri_prefix_s = () => {
+  sprintf("%s/ts/", host_uri^);
 }
 
 let gen_func_s = (func) => {
@@ -91,15 +94,18 @@ let gen_values = (data) => {
     x => sub(x, 0, length(x)-1)  ++ "]";
 }
 
-
-let handle_post = (data, to_) => {
-  let uri = sprintf("%s/ts/%s", host_uri^, to_);
-  let payload = gen_values(data);
-  Net.post(~uri, ~payload); 
+let gen_series_s = (series) => {
+  open String;
+  List.fold_left( (acc,x) => acc++trim(x)++",", "", series) |>
+    x => sub(x, 0, length(x)-1);
 }
 
-let gen_series_s = (series) => {
-  sprintf("%s/ts/%s", host_uri^, series);
+let handle_post = (data, series) => {
+  let series = gen_series_s(series);
+  let uri_prefix = gen_uri_prefix_s();
+  let payload = gen_values(data);
+  let uri = uri_prefix ++ series;
+  Net.post(~uri, ~payload); 
 }
 
 let gen_filter_worker = (acc, x) => {
@@ -135,7 +141,8 @@ let handle_get_since = (func,series,filter,since) => {
   let filter_s = gen_filter_s(filter);
   let since_s = sprintf("/since/%d", since);
   let series_s = gen_series_s(series);
-  let uri = series_s ++ since_s ++ filter_s ++ func_s;
+  let uri_prefix = gen_uri_prefix_s();
+  let uri = uri_prefix ++ series_s ++ since_s ++ filter_s ++ func_s;
   Net.get(~uri);
 };
 
@@ -144,7 +151,8 @@ let handle_get_range = (func,series,filter,(t1,t2)) => {
   let func_s = gen_func_s(func);
   let filter_s = gen_filter_s(filter);
   let series_s = gen_series_s(series);
-  let uri = series_s ++ range_s ++ filter_s ++ func_s;  
+  let uri_prefix = gen_uri_prefix_s();
+  let uri = uri_prefix ++ series_s ++ range_s ++ filter_s ++ func_s;  
   Net.get(~uri);
 };
 
@@ -153,7 +161,8 @@ let handle_get_last = (func,series,filter,last) => {
   let func_s = gen_func_s(func);
   let filter_s = gen_filter_s(filter);
   let series_s = gen_series_s(series);
-  let uri = series_s ++ last_s ++ filter_s ++ func_s;  
+  let uri_prefix = gen_uri_prefix_s();
+  let uri = uri_prefix ++ series_s ++ last_s ++ filter_s ++ func_s;  
   Net.get(~uri);
 };
 
@@ -161,17 +170,18 @@ let handle_delete_range = (series,filter,(t1,t2)) => {
   let delete_s = sprintf("/range/%d/%d", t1, t2);
   let filter_s = gen_filter_s(filter);
   let series_s = gen_series_s(series);
-  let uri = series_s ++ delete_s ++ filter_s;  
+  let uri_prefix = gen_uri_prefix_s();
+  let uri = uri_prefix ++ series_s ++ delete_s ++ filter_s;  
   Net.delete(~uri);
 };
 
 let process = (statement) => {
   switch(statement) {
   | `Set (uri) => set_host(uri);
-  | `Post(data, to_target) => handle_post(data, to_target)
-  | `Get_since(func,from,filter,since) => handle_get_since(func,from,filter,since)
-  | `Get_range(func,from,filter,range) => handle_get_range(func,from,filter,range)
-  | `Get_last(func,from,filter,last) => handle_get_last(func,from,filter,last)
-  | `Delete_range(from,filter,range) => handle_delete_range(from,filter,range)
+  | `Post(data, series) => handle_post(data, series)
+  | `Get_since(func,series,filter,since) => handle_get_since(func,series,filter,since)
+  | `Get_range(func,series,filter,range) => handle_get_range(func,series,filter,range)
+  | `Get_last(func,series,filter,last) => handle_get_last(func,series,filter,last)
+  | `Delete_range(series,filter,range) => handle_delete_range(series,filter,range)
   };
 };

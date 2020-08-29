@@ -46,11 +46,11 @@ prog:
 
 value:
   | SET; host = host; { `Set (host) }
-  | POST; data_items = data_items; to_target = to_target; { `Post (data_items, to_target) }
-  | GET; func = func?; from = from; since = since; filter_items = filter_items?;  { `Get_since (func,from,filter_items,since) }
-  | GET; func = func?; from = from; range = range;  filter_items = filter_items?;  { `Get_range (func,from,filter_items,range) }
-  | GET; func = func?; from = from; last = last; filter_items  = filter_items?;  { `Get_last (func,from,filter_items,last) }
-  | DELETE; from = from; range = range; filter_items = filter_items?;  { `Delete_range (from,filter_items,range) }
+  | POST; data_items = data_items; TO; series = series; { `Post (data_items, series) }
+  | GET; func = func?; FROM; series = series; since = since; filter_items = filter_items?;  { `Get_since (func,series,filter_items,since) }
+  | GET; func = func?; FROM; series = series; range = range;  filter_items = filter_items?;  { `Get_range (func,series,filter_items,range) }
+  | GET; func = func?; FROM; series = series; last = last; filter_items  = filter_items?;  { `Get_last (func,series,filter_items,last) }
+  | DELETE; FROM; series = series; range = range; filter_items = filter_items?;  { `Delete_range (series,filter_items,range) }
 
 
 host:
@@ -77,11 +77,8 @@ tag_item:
 func:
   MIN { "min" } | MAX; { "max"} | SUM; {"sum"} | COUNT; {"count"} | MEAN; {"mean"} | SD; {"sd"};
 
-from:
-  FROM; s = STRING { s };
-  
-to_target:
-  TO; s = STRING { s };
+series:
+  l = separated_list(COMMA, STRING); { l };
 
 range:
   | RANGE; n1 = INT; SECONDS; TO; n2 = INT; SECONDS { (Nibbleql.get_seconds(n1), Nibbleql.get_seconds(n2))}

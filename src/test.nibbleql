@@ -10,11 +10,11 @@ get from "sensor1" SINCE 24h;
 
 get from "sensor1" SINCE 1d;
 
-get from "sensor1,sensor2" since 1000s where "serial" is "A001";
+get from "sensor1", "sensor2" since 1000s where "serial" is "A001";
 
 get from "sensor2" last 10;
 
-get count from "sensor1,sensor2" since 10s where "serial" is "A001";
+get count from "sensor1" ,"sensor2" since 10s where "serial" is "A001";
 
 get from "sensor1" range 10days to 0days;
 
