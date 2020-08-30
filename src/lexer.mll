@@ -58,8 +58,6 @@ rule read =
   | "TIMESTAMP" | "timestamp" { TIMESTAMP }
   | "TAG" | "tag" { TAG }
   | "VALUE" | "value" { VALUE }
-  | "OR" | "or" { OR }
-  | "AND" | "and" { AND }  
   | ','      { COMMA }
   | '('      { LEFT_PAREN }
   | ')'      { RIGHT_PAREN }

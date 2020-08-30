@@ -34,8 +34,6 @@
 %token TAG
 %token VALUE
 %token SEMI_COLON
-%token OR
-%token AND
 
 %start <Nibbleql.value option> prog
 %%
@@ -89,13 +87,11 @@ range:
 last:
   LAST; n = INT { n };
 
-op: OR; | AND; {};
-
 filter_items:
-  | lis = separated_nonempty_list(op, filter_item); { lis };
+  | WHERE; lis = separated_nonempty_list(COMMA, filter_item); { lis };
 
 filter_item:
-  WHERE; s1 = STRING; IS; s2 = STRING { (s1,s2) } ;
+  s1 = STRING; IS; s2 = STRING { (s1,s2) } ;
 
 since:
   | SINCE; n = INT; SECONDS { Nibbleql.get_seconds(n) }
