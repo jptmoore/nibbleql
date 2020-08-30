@@ -80,6 +80,7 @@ series:
 
 range:
   | RANGE; n1 = INT; SECONDS; TO; n2 = INT; SECONDS { (Nibbleql.get_seconds(n1), Nibbleql.get_seconds(n2))}
+  | RANGE; n1 = INT; TO; n2 = INT; { (n1,n2)}
   | RANGE; n1 = INT; MINUTES; TO; n2 = INT; MINUTES { (Nibbleql.get_minutes(n1), Nibbleql.get_minutes(n2))}
   | RANGE; n1 = INT; HOURS; TO; n2 = INT; HOURS { (Nibbleql.get_hours(n1), Nibbleql.get_hours(n2))}
   | RANGE; n1 = INT; DAYS; TO; n2 = INT; DAYS { (Nibbleql.get_days(n1), Nibbleql.get_days(n2))} ;
@@ -95,6 +96,7 @@ filter_item:
 
 since:
   | SINCE; n = INT; SECONDS { Nibbleql.get_seconds(n) }
+  | SINCE; n = INT; { (n) }
   | SINCE; n = INT; MINUTES { Nibbleql.get_minutes(n) }
   | SINCE; n = INT; HOURS { Nibbleql.get_hours(n) }
   | SINCE; n = INT; DAYS { Nibbleql.get_days(n) } ;
