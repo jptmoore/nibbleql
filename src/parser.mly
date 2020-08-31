@@ -4,7 +4,7 @@
 %token SET
 %token POST
 %token TO
-%token WHERE
+%token FILTER
 %token IS
 %token HOST
 %token GET
@@ -89,7 +89,7 @@ last:
   LAST; n = INT { n };
 
 filter_items:
-  | WHERE; lis = separated_nonempty_list(COMMA, filter_item); { lis };
+  | FILTER; lis = separated_nonempty_list(COMMA, filter_item); { lis };
 
 filter_item:
   s1 = STRING; IS; s2 = STRING { (s1,s2) } ;

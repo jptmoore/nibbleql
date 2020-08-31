@@ -36,7 +36,7 @@ rule read =
   | "SET" | "set"  { SET }
   | "POST" | "post"  { POST }
   | "TO" | "to"  { TO }
-  | "WHERE" | "where" { WHERE }
+  | "FILTER" | "filter" { FILTER }
   | "IS" | "is" { IS }
   | "HOST" | "host" { HOST }
   | "GET" | "get" { GET }

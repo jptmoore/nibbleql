@@ -10,14 +10,14 @@ get from "sensor1" SINCE 24h;
 
 get from "sensor1" SINCE 1d;
 
-get from "sensor1", "sensor2" since 1000s where "serial" is "A001";
+get from "sensor1", "sensor2" since 1000s filter "serial" is "A001";
 
 get from "sensor2" last 10;
 
-get count from "sensor1" ,"sensor2" since 10s where "serial" is "A001";
+get count from "sensor1" ,"sensor2" since 10s filter "serial" is "A001";
 
 get from "sensor1" range 10days to 0days;
 
 delete from "sensor2" range 10m to 5m;
 
-delete from "sensor1" range 5s to 0s where "serial" is "A001";
+delete from "sensor1" range 5s to 0s filter "serial" is "A001";
